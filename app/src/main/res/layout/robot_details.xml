@@ -3,23 +3,28 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/robot_details">
-
-
     <TextView
+        android:id="@+id/robot_details_id"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="dwandjiwadn"/>
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/robot_details_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/robot_posx"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/robot_posy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    <ToggleButton
-        android:text="ToggleButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toggleButton" />
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <CheckedTextView
-        android:text="CheckedTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/checkedTextView" />
+    </ListView>
 
 </LinearLayout>

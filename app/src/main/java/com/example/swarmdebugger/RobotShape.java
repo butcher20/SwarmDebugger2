@@ -18,8 +18,8 @@ public class RobotShape extends View {
 
     int posX;
     int posY;
-    int textSize = 20;
-    int radius = 20;
+    int textSize = 32;
+    int radius = 35;
 
     //Distance between circle centre and bottom of text
     int textOffset= radius;
@@ -41,8 +41,8 @@ public class RobotShape extends View {
 
 
         paint = new Paint();
-        paint.setColor(Color.BLACK);
-        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.GREEN);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setStrokeWidth(3);
 
         textPaint = new Paint();

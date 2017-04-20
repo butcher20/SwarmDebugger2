@@ -1,6 +1,7 @@
 package com.example.swarmdebugger;
 
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +16,20 @@ import java.util.List;
  * Created by Alex on 31/03/2017.
  */
 
-public class RobotDetailsFragment extends Fragment {
+public class RobotDetailsFragment extends ListFragment {
 
     Robot robot;
     List<View> debugInfoViews;
     LinearLayout layout;
 
+    TextView id, status, posX, posY;
+
+    RobotDetailsAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        robot = MainActivity.robotList.get(getArguments().getInt("index"));
+
     }
 
 
@@ -33,13 +38,15 @@ public class RobotDetailsFragment extends Fragment {
                               Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.robot_details, container, false);
 
-        layout = (LinearLayout) view.findViewById(R.id.robot_details);
-        layout.setOrientation(LinearLayout.VERTICAL);
+        int index = MainActivity.getRobotIndexFromId((getArguments().getInt("id")));
 
-        TextView id = new TextView(getActivity());
-        TextView status = new TextView(getActivity());
-        TextView posX = new TextView(getActivity());
-        TextView posY = new TextView(getActivity());
+        robot = MainActivity.robotList.get(index);
+
+
+        TextView id = (TextView) view.findViewById(R.id.robot_details_id);
+        status = (TextView) view.findViewById(R.id.robot_details_status);
+        posX = (TextView) view.findViewById(R.id.robot_posx);
+        posY = (TextView) view.findViewById(R.id.robot_posy);
 
 
         String s = "Robot " + robot.getId();
@@ -50,24 +57,20 @@ public class RobotDetailsFragment extends Fragment {
         posX.setText(s);
         s = "pos Y: " + robot.getPosY();
         posY.setText(s);
-        //Add all the views to the layout
-        layout.addView(id);
-        layout.addView(status);
-        layout.addView(posX);
-        layout.addView(posY);
 
-        //If additional debug info exists, retrieve and print it.
-        if (robot.getDebugInfo() != null) {
-            debugInfoViews = getDebugInfoViews();
-            for (int i=0; i<debugInfoViews.size(); i++) {
-                layout.addView(debugInfoViews.get(i));
-            }
-        }
         return view;
 
     }
 
-    private List<View> getDebugInfoViews() {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        adapter = new RobotDetailsAdapter(getActivity(), robot.getDebugInfo());
+        setListAdapter(adapter);
+    }
+
+    private List<View> populateDebugInfoViews() {
         List<View> viewList= new ArrayList<View>();
         List<DebugInfo> debugInfoList = robot.getDebugInfo();
         String s;
@@ -87,5 +90,17 @@ public class RobotDetailsFragment extends Fragment {
 
     public Robot getRobot() {
         return robot;
+    }
+
+    public TextView getStatus() {
+        return status;
+    }
+
+    public TextView getPosX() {
+        return posX;
+    }
+
+    public TextView getPosY() {
+        return posY;
     }
 }

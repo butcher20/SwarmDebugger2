@@ -1,5 +1,7 @@
 package com.example.swarmdebugger;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -12,13 +14,16 @@ public class ServerThread extends Thread {
     private DatagramSocket socket;
     private int port;
 
-    RobotPacketReader packetReader;
     private boolean running = true;
 
-    RobotPacketReader.OnPacketProcessedListener listener;
+    OnPacketReceivedListener listener;
+
+    public interface OnPacketReceivedListener {
+        public void onPacketReceived(String data);
+    }
 
 
-    public ServerThread(int port, RobotPacketReader.OnPacketProcessedListener listener) {
+    public ServerThread(int port, OnPacketReceivedListener listener) {
         super();
         this.port = port;
         this.listener = listener;
@@ -27,6 +32,7 @@ public class ServerThread extends Thread {
     public void run() {
 
         try {
+            Log.d("server", "Creating socket with port" + port);
             socket = new DatagramSocket(port);
             while (running) {
                 byte[] buf = new byte[256];
@@ -35,9 +41,13 @@ public class ServerThread extends Thread {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
 
-                // Process data
-                packetReader = new RobotPacketReader(packet, listener);
-                packetReader.processPacket();
+                Log.d("server", "packet received");
+
+                //Extract Data
+                String packetData = new String(packet.getData(), 0, packet.getLength());
+
+                // Process received data
+                listener.onPacketReceived(packetData);
             }
         } catch (IOException e) {
             e.printStackTrace();
