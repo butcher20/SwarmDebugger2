@@ -37,6 +37,8 @@ public class ArenaFragment extends Fragment {
     static int arenaX;
     static int arenaY;
 
+    ArenaBorder border;
+
     RelativeLayout layout;
 
     List<RobotShape> activeRobots = new ArrayList<RobotShape>();
@@ -65,13 +67,13 @@ public class ArenaFragment extends Fragment {
                 layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 setScreenSize();
 
-                ArenaBorder border = new ArenaBorder(getActivity(), arenaX, arenaY);
+                border = new ArenaBorder(getActivity(), arenaX, arenaY);
 
                 layout.addView(border);
 
                 if (MainActivity.robotList.size() > 0) {
                     for (int i = 0; i < MainActivity.robotList.size(); i++) {
-                        RobotShape robotShape = new RobotShape(getActivity(), MainActivity.robotList.get(i));
+                        RobotShape robotShape = new RobotShape(getActivity(), MainActivity.robotList.get(i), border.getPixelWidth(), border.getPixelHeight());
                         activeRobots.add(robotShape);
                         layout.addView(robotShape);
                     }
@@ -104,4 +106,7 @@ public class ArenaFragment extends Fragment {
         return layout;
     }
 
+    public ArenaBorder getBorder() {
+        return border;
+    }
 }

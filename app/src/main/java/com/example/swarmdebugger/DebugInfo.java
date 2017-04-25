@@ -6,7 +6,9 @@ package com.example.swarmdebugger;
 public class DebugInfo {
     String name;
     int val;
-    boolean displayAsText = true;
+    boolean displayAsText = false;
+    boolean canBeDisplayedAsGraphic = false;
+    boolean displayAsGraphic = false;
 
     public DebugInfo(String name) {
         this.name = name;
@@ -31,5 +33,29 @@ public class DebugInfo {
 
     public void setVal(int val) {
         this.val = val;
+    }
+
+    public boolean isDisplayAsText() {
+        return displayAsText;
+    }
+
+    public void setDisplayAsText(boolean displayAsText) {
+        this.displayAsText = displayAsText;
+    }
+
+    public boolean isDisplayAsGraphic() {
+        return displayAsGraphic;
+    }
+
+    public void setDisplayAsGraphic(boolean displayAsGraphic) {
+        this.displayAsGraphic = displayAsGraphic;
+    }
+
+    public boolean isCanBeDisplayedAsGraphic() {
+        return canBeDisplayedAsGraphic;
+    }
+
+    public void setCanBeDisplayedAsGraphic(boolean canBeDisplayedAsGraphic) {
+        this.canBeDisplayedAsGraphic = canBeDisplayedAsGraphic;
     }
 }

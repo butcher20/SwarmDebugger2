@@ -21,9 +21,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RobotListFragment.OnRobotSelectedListener,
                                                                 ArenaInitialFragment.OnButtonPressedListener,
-                                                                    ServerThread.OnPacketReceivedListener {
+                                                                    ServerThread.OnPacketReceivedListener,  RobotDetailsFragment.OnCheckBoxChangeListener {
     static List<Robot> robotList = new ArrayList<Robot>();
-    DebugInfo info, info2, info3, info4;
+    DebugInfo info, info2, info3, info4, info5, info6, info7, info8;
+    DebugInfo infoa, infob, infoc, infod, infoe, infof, infog, infoh;
     List<DebugInfo> infoList, infoList2;
     ServerThread serverThread;
 
@@ -39,14 +40,38 @@ public class MainActivity extends AppCompatActivity implements RobotListFragment
         setContentView(R.layout.activity_main);
         context = this;
 
-        robotList.add(new Robot(1, "Moving", 650, 500));
-        robotList.add(new Robot(2, "Stationary", 1100, 350));
-        robotList.add(new Robot(3, "Moving", 250, 250));
+        robotList.add(new Robot(1, "Moving", 50, 50, 90));
+        robotList.add(new Robot(2, "Stationary", 0, 25, 270));
+        robotList.add(new Robot(3, "Moving", -50, 50, 215));
 
-        info = new DebugInfo("IR1", 0);
-        info2 = new DebugInfo("IR2", 0);
-        info3 = new DebugInfo("IR3", 0);
-        info4 = new DebugInfo("IR4", 5);
+        info = new DebugInfo("IR0", 0);
+        info2 = new DebugInfo("IR1", 500);
+        info3 = new DebugInfo("IR2", 1000);
+        info4 = new DebugInfo("IR3", 1500);
+        info5 = new DebugInfo("IR4", 2000);
+        info6 = new DebugInfo("IR5", 2500);
+        info7 = new DebugInfo("IR6", 3000);
+        info8 = new DebugInfo("IR7", 4000);
+
+        infoa = new DebugInfo("info 1", 100);
+        infob = new DebugInfo("info 2", 420);
+        infoc = new DebugInfo("info 3", 666);
+        infod = new DebugInfo("info 4", 9999);
+        infoe = new DebugInfo("info 5", 0);
+        infof = new DebugInfo("info 6", 4300);
+        infog = new DebugInfo("info 7", 80);
+        infoh = new DebugInfo("info 8", 42);
+
+        info.setCanBeDisplayedAsGraphic(true);
+        info2.setCanBeDisplayedAsGraphic(true);
+        info3.setCanBeDisplayedAsGraphic(true);
+        info4.setCanBeDisplayedAsGraphic(true);
+        info5.setCanBeDisplayedAsGraphic(true);
+        info6.setCanBeDisplayedAsGraphic(true);
+        info7.setCanBeDisplayedAsGraphic(true);
+        info8.setCanBeDisplayedAsGraphic(true);
+
+
 
 
         infoList = new ArrayList<DebugInfo>();
@@ -55,10 +80,22 @@ public class MainActivity extends AppCompatActivity implements RobotListFragment
         infoList.add(info2);
         infoList.add(info3);
         infoList.add(info4);
-        infoList2.add(info3);
+        infoList.add(info5);
+        infoList.add(info6);
+        infoList.add(info7);
+        infoList.add(info8);
+        infoList2.add(infoa);
+        infoList2.add(infob);
+        infoList2.add(infoc);
+        infoList2.add(infod);
+        infoList2.add(infoe);
+        infoList2.add(infof);
+        infoList2.add(infog);
+        infoList2.add(infoh);
 
 
-        robotList.get(0).setDebugInfo(infoList);
+        robotList.get(0).setInfraRedSensor(infoList);
+        robotList.get(0).setDebugInfo(infoList2);
         robotList.get(2).setDebugInfo(infoList2);
 
         // Create a new Fragment to be placed in the activity layout
@@ -148,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements RobotListFragment
         // Commit the transaction
         transaction.commit();
     }
-    
+
 
     static public int getRobotIndexFromId(int id) {
         Robot robot;
@@ -185,6 +222,24 @@ public class MainActivity extends AppCompatActivity implements RobotListFragment
                 task.execute(new String[] { data });
             }
         });
+    }
+
+    @Override
+    public void onCheckBoxClicked(Robot robot) {
+        //Check if arena fragment is active
+        ArenaFragment fragment = (ArenaFragment) getFragmentManager().findFragmentByTag("arena");
+        if (fragment != null && fragment.isVisible()) {
+            //Redraw the robot in the arena whose checkbox information has changed
+            for (int i = 0; i < arenaFragment.getActiveRobots().size(); i++) {
+                if (arenaFragment.getActiveRobots().get(i).getRobot().getId() == robot.getId()) {
+                    //Insert the updated robot information into the robot arena object
+                    arenaFragment.getActiveRobots().get(i).setRobot(robot);
+                    //Invalidate the view to redraw it
+                    arenaFragment.getActiveRobots().get(i).invalidate();
+                    break;
+                }
+            }
+        }
     }
 
     private class RobotPacketReader extends AsyncTask<String, Void, Robot> {
@@ -248,28 +303,50 @@ public class MainActivity extends AppCompatActivity implements RobotListFragment
                         readData();
                         robot.setPosY(Integer.parseInt(builder.toString()));
                     } else {
+
                         //Custom debug info
                         // Name of the custom debug info
                         String name = builder.toString();
                         //Read the value of the custom debug info
                         readData();
-                        // Check if DebugInfo object already exists for received debug info.
                         int i;
-                        for (i = 0; i < robot.getDebugInfo().size(); i++) {
-                            if (robot.getDebugInfo().get(i).getName().equals(name)) {
-                                // Debug info exists so update value
-                                robot.getDebugInfo().get(i).setVal(Integer.parseInt(builder.toString()));
-                                break;
+                        //Check to see whether the data is infra red data.
+                        if ((name.length() == 3) && name.startsWith("IR")) {
+                            for (i = 0; i < robot.getInfraRedSensor().size(); i++) {
+                                if (robot.getInfraRedSensor().get(i).getName().equals(name)) {
+                                    // IR sensor info exists so update value
+                                    robot.getInfraRedSensor().get(i).setVal(Integer.parseInt(builder.toString()));
+                                    break;
+                                }
                             }
-                        }
-                        // No existing debug info
-                        if (i == robot.getDebugInfo().size()) {
-                            // Create a new DebugInfo object with the extracted name
-                            DebugInfo debugInfo = new DebugInfo(name);
-                            // Set the value in the DebugInfo object
-                            debugInfo.setVal(Integer.parseInt(builder.toString()));
-                            //Add the debuginfo to the list in the robot object
-                            robot.getDebugInfo().add(debugInfo);
+                            // No existing debug info
+                            if (i == robot.getInfraRedSensor().size()) {
+                                // Create a new DebugInfo object with the extracted name
+                                DebugInfo debugInfo = new DebugInfo(name);
+                                // Set the value in the DebugInfo object
+                                debugInfo.setVal(Integer.parseInt(builder.toString()));
+                                //Add the infrared data to the list in the robot object
+                                robot.getInfraRedSensor().add(debugInfo);
+                            }
+                        } else {
+                            // Custom debug info (not IR sensor info)
+                            // Check if DebugInfo object already exists for received debug info.
+                            for (i = 0; i < robot.getDebugInfo().size(); i++) {
+                                if (robot.getDebugInfo().get(i).getName().equals(name)) {
+                                    // Debug info exists so update value
+                                    robot.getDebugInfo().get(i).setVal(Integer.parseInt(builder.toString()));
+                                    break;
+                                }
+                            }
+                            // No existing debug info
+                            if (i == robot.getDebugInfo().size()) {
+                                // Create a new DebugInfo object with the extracted name
+                                DebugInfo debugInfo = new DebugInfo(name);
+                                // Set the value in the DebugInfo object
+                                debugInfo.setVal(Integer.parseInt(builder.toString()));
+                                //Add the debuginfo to the list in the robot object
+                                robot.getDebugInfo().add(debugInfo);
+                            }
                         }
                     }
                     builder.setLength(0);
@@ -337,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements RobotListFragment
             // If robot id was not found in the list then add it to the end of the list.
             if (i == arenaFragment.getActiveRobots().size()) {
                 // Create a new robot entity for the arena
-                RobotShape robotShape = new RobotShape(context, robot);
+                RobotShape robotShape = new RobotShape(context, robot, arenaFragment.getBorder().getPixelWidth(), arenaFragment.getBorder().getPixelWidth());
                 // Add entity to list of entitites in the arena
                 arenaFragment.getActiveRobots().add(robotShape);
                 // Add the robot shape to the layout.

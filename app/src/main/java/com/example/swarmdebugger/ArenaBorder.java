@@ -12,30 +12,32 @@ import android.view.View;
  */
 
 public class ArenaBorder extends View {
-    int width;
-    int height;
+    int realWidth;
+    int realHeight;
+    int pixelWidth;
+    int pixelHeight;
     float heightRatio;
     Rect rect;
     Paint paint;
 
     public ArenaBorder(Context context, int x, int y) {
         super(context);
-        width = x;
-        height = y;
+        realWidth = x;
+        realHeight = y;
 
-        heightRatio = ((float)height/(float)width);
+        heightRatio = ((float)realHeight/(float)realWidth);
 
-        //Actual width is the length of the arena fragment
-        width = ArenaFragment.arenaFragWidth - (ArenaFragment.arenaMargin);
-        height = (int)(width * heightRatio);
+        //Width in pixels is the length of the arena fragment
+        pixelWidth = ArenaFragment.arenaFragWidth - (ArenaFragment.arenaMargin);
+        pixelHeight = (int)(pixelWidth * heightRatio);
 
         //If height is too large for the screen, scale the border down until it fits.
-        while(height>(ArenaFragment.arenaFragHeight -(ArenaFragment.arenaMargin))) {
-            height = height-1;
-            width = width-1;
+        while(pixelHeight>(ArenaFragment.arenaFragHeight -(ArenaFragment.arenaMargin))) {
+            pixelHeight--;
+            pixelWidth--;
         }
 
-        rect = new Rect(new Rect(ArenaFragment.arenaMargin,ArenaFragment.arenaMargin,width,height));
+        rect = new Rect(ArenaFragment.arenaMargin,ArenaFragment.arenaMargin,pixelWidth,pixelHeight);
 
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
@@ -49,5 +51,25 @@ public class ArenaBorder extends View {
 
         canvas.drawRect(rect, paint);
 
+    }
+
+    public int getRealWidth() {
+        return realWidth;
+    }
+
+    public int getRealHeight() {
+        return realHeight;
+    }
+
+    public int getPixelWidth() {
+        return pixelWidth;
+    }
+
+    public int getPixelHeight() {
+        return pixelHeight;
+    }
+
+    public Rect getRect() {
+        return rect;
     }
 }
